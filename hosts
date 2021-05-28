@@ -1,0 +1,5 @@
+[all:vars]
+ansible_connection = ssh
+
+[aws-ec2]
+ec2 ansible_host=13.235.241.147  ansible_python_interpreter=/usr/bin/python3

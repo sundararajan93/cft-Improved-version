@@ -1,0 +1,8 @@
+---
+- hosts: ec2
+  gather_facts: false
+  tasks:
+    - name: sudo apt update
+    become: true
+    shell: |
+            mysql --user=$user --host=$host --password=$password -e "CREATE database wikidb;"
