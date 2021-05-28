@@ -9,7 +9,7 @@ DBServer=$(aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep 
 DBUser=$(aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 23)
 DBpass=$(aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 5)
 Password=$(aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 5)
-IPAddr='15.206.80.42'
+IPAddr='13.235.241.147'
 
 echo -e "Installing MediaWiki...\n"
 
@@ -18,5 +18,5 @@ php maintenance/install.php --dbserver=$DBServer --dbname='wikidb' --dbuser=$DBU
 echo -e "Installed Mediawiki successfully"
 
 echo -e "Configuring Public IP for Gridwiki" && \
-sed -i 's/localhost/15.206.80.42/g' /var/www/html/wiki/LocalSettings.php && \
+sed -i 's/localhost/13.235.241.147/g' /var/www/html/wiki/LocalSettings.php && \
 echo -e "Configured successfully!!!"
