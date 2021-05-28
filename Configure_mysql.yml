@@ -19,14 +19,20 @@
           - name: Creating database
             become: true
             command: sudo mysql --user={{ ((creds.stdout | from_json).SecretString | from_json).username }} --host={{ ((creds.stdout | from_json).SecretString | from_json).host }} --password={{ ((creds.stdout | from_json).SecretString | from_json).password }} -e "CREATE database wikidb;"
+          
+          - name: Create database user with password and all database privileges and WITH GRANT OPTION
+            become: true
+            command: mysql --user={{ ((creds.stdout | from_json).SecretString | from_json).username }} --host={{ ((creds.stdout | from_json).SecretString | from_json).host }} --password={{ ((creds.stdout | from_json).SecretString | from_json).password }} -e "CREATE USER 'wiki'@'{{ ((creds.stdout | from_json).SecretString | from_json).host }}' IDENTIFIED BY '{{ ((creds.stdout | from_json).SecretString | from_json).password }}';"
+          - name: Giving permission
+            become: true
+            command: mysql --user={{ ((creds.stdout | from_json).SecretString | from_json).username }} --host={{ ((creds.stdout | from_json).SecretString | from_json).host }} --password={{ ((creds.stdout | from_json).SecretString | from_json).password }} -e "GRANT ALL PRIVILEGES ON wikidb.* TO 'wiki'@'{{ ((creds.stdout | from_json).SecretString | from_json).host }}' WITH GRANT OPTION;"
 
-          - name: Create database user with password and all database privileges and 'WITH GRANT OPTION'
-            community.mysql.mysql_user:
-              host: {{ ((creds.stdout | from_json).SecretString | from_json).host }}
-              name: {{ ((creds.stdout | from_json).SecretString | from_json).username }}
-              password: {{ ((creds.stdout | from_json).SecretString | from_json).password }}
-              priv: 'wikidb.*:ALL,GRANT'
-              state: present
+            #            mysql_user:
+            # host: "{{ ((creds.stdout | from_json).SecretString | from_json).host }}"
+            # name: "{{ ((creds.stdout | from_json).SecretString | from_json).username }}"
+            # password: "{{ ((creds.stdout | from_json).SecretString | from_json).password }}"
+            # priv: 'wikidb.*:ALL,GRANT'
+            # state: present
 
 
 #            password=$(aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 5)
