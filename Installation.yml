@@ -2,11 +2,17 @@
 - name: Copy the Infra creation scripts
   hosts: ec2
   tasks:
+      - name: Capturing Credentials
+        command : aws secretsmanager get-secret-value --secret-id rdsdbpassword
+        delegate_to: 127.0.0.1
+        register: creds
+
       - name: copying script files to remote host
         become: true
         copy: src={{ item.src }} dest={{ item.dest }} mode={{ item.mode }}
         with_items: 
-            - { src: 'install_mediawiki.sh',  dest: 'install_mediawiki.sh', mode: +x}
+            - { src: 'install_mediawiki.sh',  dest: '/tmp/install_mediawiki.sh', mode: +x}
+            
       - name: Executing the scripts
         become: true
-        command: /tmp/install_dependencies_aws.sh
+        command: /tmp/install_mediawiki.sh {{ ((creds.stdout | from_json).SecretString | from_json).host }} {{ ((creds.stdout | from_json).SecretString | from_json).username }} {{ ((creds.stdout | from_json).SecretString | from_json).password }} {{ ((creds.stdout | from_json).SecretString | from_json).password }}

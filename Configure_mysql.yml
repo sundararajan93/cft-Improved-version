@@ -26,21 +26,3 @@
           - name: Giving permission
             become: true
             command: mysql --user={{ ((creds.stdout | from_json).SecretString | from_json).username }} --host={{ ((creds.stdout | from_json).SecretString | from_json).host }} --password={{ ((creds.stdout | from_json).SecretString | from_json).password }} -e "GRANT ALL PRIVILEGES ON wikidb.* TO 'wiki'@'{{ ((creds.stdout | from_json).SecretString | from_json).host }}' WITH GRANT OPTION;"
-
-            #            mysql_user:
-            # host: "{{ ((creds.stdout | from_json).SecretString | from_json).host }}"
-            # name: "{{ ((creds.stdout | from_json).SecretString | from_json).username }}"
-            # password: "{{ ((creds.stdout | from_json).SecretString | from_json).password }}"
-            # priv: 'wikidb.*:ALL,GRANT'
-            # state: present
-
-
-#            password=$(aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 5)
-#            host=$(aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 19)
-#            mysql --user=$user --host=$host --password=$password -e "CREATE database wikidb;"
-#
-#    - name: Creating User
-#    become: true
-#    mysql_user:
-#      name: 'wiki'
-#      host: '$host'

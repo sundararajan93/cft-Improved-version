@@ -5,10 +5,10 @@ echo -e "Default Values"
 echo -e "=============="
 
 
-DBServer=$(aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 19)
-DBUser=$(aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 23)
-DBpass=$(aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 5)
-Password=$(aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 5)
+DBServer=$1 
+DBUser=$2
+DBpass=$3
+Password=$4
 IPAddr='13.235.241.147'
 
 echo -e "Installing MediaWiki...\n"
