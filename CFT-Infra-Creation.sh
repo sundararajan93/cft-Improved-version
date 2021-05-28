@@ -7,7 +7,7 @@ export AWS_SECRET_ACCESS_KEY=$SECRET_KEY
 
 STACK_NAME=$1
 
-aws cloudformation create-stack --stack-name $1 --template-body file://CFT-SECRETS.json
+aws cloudformation create-stack --stack-name $1 --template-body file://CFT/CFT-SECRETS.json
 echo -e "RDS-DB and EC2 instance will be up in few moments...\n"
 aws cloudformation wait stack-create-complete --stack-name $1
 
