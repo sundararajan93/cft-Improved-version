@@ -2,7 +2,24 @@
 - hosts: ec2
   gather_facts: false
   tasks:
-    - name: sudo apt update
-    become: true
-    shell: |
-            mysql --user=$user --host=$host --password=$password -e "CREATE database wikidb;"
+    - name:
+      become: true
+      shell: mysql --user=$user --host=$host --password=$password -e "CREATE database wikidb;"
+
+    - name: Configuring MYSQL DB for mediawiki
+      become: true
+      shell: aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 23
+      register: user.stdout
+    
+    - name: output username
+      msg: {{ user.stdout }} 
+
+#            password=$(aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 5)
+#            host=$(aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 19)
+#            mysql --user=$user --host=$host --password=$password -e "CREATE database wikidb;"
+#
+#    - name: Creating User
+#    become: true
+#    mysql_user:
+#      name: 'wiki'
+#      host: '$host'
