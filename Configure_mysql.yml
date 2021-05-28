@@ -9,7 +9,7 @@
     - name: Configuring MYSQL DB for mediawiki
       become: true
       shell: aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 23
-      register: user.stdout
+      register: user
     
     - name: output username
       msg: {{ user.stdout }} 
