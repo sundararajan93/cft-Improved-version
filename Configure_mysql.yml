@@ -2,17 +2,23 @@
 - hosts: ec2
   gather_facts: false
   tasks:
-    - name:
-      become: true
-      shell: mysql --user=$user --host=$host --password=$password -e "CREATE database wikidb;"
+          - name: Capturing Credentials
+            command : aws secretsmanager get-secret-value --secret-id rdsdbpassword #| grep SecretString #| awk \'{print $2}\' #| sed 's/\\//g' | cut -d "\"" -f 23
+            delegate_to: 127.0.0.1
+            register: creds
 
-    - name: Configuring MYSQL DB for mediawiki
-      become: true
-      shell: aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 23
-      register: user
-    
-    - name: output username
-      msg: {{ user.stdout }} 
+          - debug:
+               msg: "{{ ((creds.stdout | from_json).SecretString | from_json).username }} "
+
+          - debug:
+               msg: "{{ ((creds.stdout | from_json).SecretString | from_json).password }} "
+
+          - debug:
+               msg: "{{ ((creds.stdout | from_json).SecretString | from_json).host }} "
+
+          - name: Creating database
+            become: true
+            command: sudo mysql --user={{ ((creds.stdout | from_json).SecretString | from_json).username }} --host={{ ((creds.stdout | from_json).SecretString | from_json).host }} --password={{ ((creds.stdout | from_json).SecretString | from_json).password }} -e "CREATE database wikidb;"
 
 #            password=$(aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 5)
 #            host=$(aws secretsmanager get-secret-value --secret-id rdsdbpassword | grep SecretString | awk '{print $2}' | sed 's/\\//g' | cut -d "\"" -f 19)
